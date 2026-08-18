@@ -27,35 +27,6 @@ return {
             spacing = 3,
         },
 
-        spec = {
-            {
-                "<leader>l",
-                group = "LSP",
-            },
-            {
-                "<leader>d",
-                group = "Diagnostics",
-            },
-            {
-                "<leader>e",
-                group = "Explorer",
-            },
-            {
-                "<leader>f",
-                group = "Find",
-            },
-            {
-                "<leader>g",
-                group = "Git",
-            },
-            {
-                "<leader>b",
-                group = "Buffer",
-            },
-            {
-                "<leader>s",
-                group = "Flash/Search",
-            },
-        },
+        spec = require("config.keymaps").wk_groups,
     },
 }

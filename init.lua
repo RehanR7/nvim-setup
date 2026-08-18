@@ -39,4 +39,5 @@ opt.mouse = "a"               -- Enables mouse interaction in all modes
 opt.foldlevel = 99     -- Prevents automatic folding so code is expanded by default
 opt.foldenable = true  -- Enables the code-folding feature globally
 
-require("config.lazy") -- Bootstraps and calls the main Lazy.nvim plugin manager file
+require("config.keymaps") -- Sets up every keybinding (see file for details)
+require("config.lazy")    -- Bootstraps and calls the main Lazy.nvim plugin manager file

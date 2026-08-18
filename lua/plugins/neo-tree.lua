@@ -9,14 +9,6 @@ return {
 
   cmd = "Neotree",
 
-  keys = {
-    {
-      "<leader>e",
-      "<cmd>Neotree toggle<CR>",
-      desc = "Toggle file explorer",
-    },
-  },
-
   opts = {
     close_if_last_window = true,
     popup_border_style = "rounded",
