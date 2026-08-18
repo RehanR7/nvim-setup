@@ -7,6 +7,7 @@ return {
             lua = { "stylua" },
             python = { "ruff_format" },
             sh = { "shfmt" },
+            html = { "prettier" },
             javascript = { "prettier" },
             json = { "prettier" },
             markdown = { "prettier" },
