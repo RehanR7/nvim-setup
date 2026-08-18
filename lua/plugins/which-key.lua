@@ -52,6 +52,10 @@ return {
                 "<leader>b",
                 group = "Buffer",
             },
+            {
+                "<leader>s",
+                group = "Flash/Search",
+            },
         },
     },
 }

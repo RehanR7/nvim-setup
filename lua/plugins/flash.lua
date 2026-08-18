@@ -3,23 +3,9 @@ return {
     event = "VeryLazy",
     opts = {},
     keys = {
-        {
-            "s",
-            mode = { "n", "x", "o" },
-            function() require("flash").jump() end,
-            desc = "Flash",
-        },
-        {
-            "S",
-            mode = { "n", "x", "o" },
-            function() require("flash").treesitter() end,
-            desc = "Flash Treesitter",
-        },
-        {
-            "r",
-            mode = "o",
-            function() require("flash").remote() end,
-            desc = "Remote Flash",
-        },
+        { "<leader>ss", mode = { "n", "x" }, function() require("flash").jump() end,       desc = "Flash Jump" },
+        { "<leader>sS", mode = { "n", "x" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
+        { "s",          mode = "o",          function() require("flash").jump() end,       desc = "Flash (operator)" },
+        { "r",          mode = "o",          function() require("flash").remote() end,     desc = "Remote Flash" },
     },
 }
