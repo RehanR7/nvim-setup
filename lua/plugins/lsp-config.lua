@@ -17,6 +17,9 @@ return {
                 "lua_ls",
                 "pyright",
                 "bashls",
+                "jsonls",
+                "cssls",
+                "sqlls",
             },
         },
     },
@@ -34,6 +37,9 @@ return {
                 "lua_ls",
                 "pyright",
                 "bashls",
+                "jsonls",
+                "cssls",
+                "sqlls",
             })
 
             -- LSP keymaps
