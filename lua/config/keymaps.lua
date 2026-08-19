@@ -2,6 +2,12 @@
 -- which-key discovers all of these automatically via their `desc`.
 local M = {}
 local map = vim.keymap.set
+local gmap = vim.g
+-- ============================================================================
+--  LEADER KEYS
+-- ============================================================================
+gmap.mapleader = " "      -- Sets the main leader key to <Space>
+gmap.maplocalleader = " " -- Sets the local leader key to <Space> (applies to filetypes)
 
 -- Explorer
 map("n", "<leader>e", "<cmd>Neotree toggle<cr>", { desc = "Toggle file explorer" })
@@ -26,7 +32,7 @@ map("n", "<leader>dq", "<cmd>Trouble qflist toggle<cr>", { desc = "Quickfix (Tro
 
 -- Formatting (conform.nvim; loaded on BufReadPre, see plugins/conform.lua)
 map("n", "<leader>lf", function()
-  require("conform").format({ async = true, lsp_format = "fallback" })
+    require("conform").format({ async = true, lsp_format = "fallback" })
 end, { desc = "Format buffer" })
 
 -- Flash (loaded on VeryLazy, safe to require directly here)
@@ -40,38 +46,38 @@ map("o", "r", function() require("flash").remote() end, { desc = "Remote Flash" 
 -- from on_attach.
 -- ---------------------------------------------------------------------
 function M.gitsigns_attach(bufnr)
-  local gs = require("gitsigns")
-  local function bmap(mode, lhs, rhs, desc)
-    vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, desc = desc })
-  end
+    local gs = require("gitsigns")
+    local function bmap(mode, lhs, rhs, desc)
+        vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, desc = desc })
+    end
 
-  -- Navigation
-  bmap("n", "]c", function()
-    if vim.wo.diff then return "]c" end
-    vim.schedule(gs.next_hunk)
-    return "<Ignore>"
-  end, "Next hunk")
-  bmap("n", "[c", function()
-    if vim.wo.diff then return "[c" end
-    vim.schedule(gs.prev_hunk)
-    return "<Ignore>"
-  end, "Prev hunk")
+    -- Navigation
+    bmap("n", "]c", function()
+        if vim.wo.diff then return "]c" end
+        vim.schedule(gs.next_hunk)
+        return "<Ignore>"
+    end, "Next hunk")
+    bmap("n", "[c", function()
+        if vim.wo.diff then return "[c" end
+        vim.schedule(gs.prev_hunk)
+        return "<Ignore>"
+    end, "Prev hunk")
 
-  -- Staging
-  bmap("n", "<leader>gs", gs.stage_hunk, "Stage hunk")
-  bmap("v", "<leader>gs", function() gs.stage_hunk({ vim.fn.line("."), vim.fn.line("v") }) end, "Stage hunk")
-  bmap("n", "<leader>gr", gs.reset_hunk, "Reset hunk")
-  bmap("n", "<leader>gS", gs.stage_buffer, "Stage buffer")
-  bmap("n", "<leader>gR", gs.reset_buffer, "Reset buffer")
-  bmap("n", "<leader>gu", gs.undo_stage_hunk, "Undo stage hunk")
+    -- Staging
+    bmap("n", "<leader>gs", gs.stage_hunk, "Stage hunk")
+    bmap("v", "<leader>gs", function() gs.stage_hunk({ vim.fn.line("."), vim.fn.line("v") }) end, "Stage hunk")
+    bmap("n", "<leader>gr", gs.reset_hunk, "Reset hunk")
+    bmap("n", "<leader>gS", gs.stage_buffer, "Stage buffer")
+    bmap("n", "<leader>gR", gs.reset_buffer, "Reset buffer")
+    bmap("n", "<leader>gu", gs.undo_stage_hunk, "Undo stage hunk")
 
-  -- Inspection
-  bmap("n", "<leader>gp", gs.preview_hunk, "Preview hunk")
-  bmap("n", "<leader>gb", gs.toggle_current_line_blame, "Toggle line blame")
-  bmap("n", "<leader>gd", gs.diffthis, "Diff this")
+    -- Inspection
+    bmap("n", "<leader>gp", gs.preview_hunk, "Preview hunk")
+    bmap("n", "<leader>gb", gs.toggle_current_line_blame, "Toggle line blame")
+    bmap("n", "<leader>gd", gs.diffthis, "Diff this")
 
-  -- Text object
-  bmap({ "o", "x" }, "ih", gs.select_hunk, "Select hunk")
+    -- Text object
+    bmap({ "o", "x" }, "ih", gs.select_hunk, "Select hunk")
 end
 
 -- ---------------------------------------------------------------------
@@ -79,38 +85,39 @@ end
 -- from plugins/lsp-config.lua's LspAttach autocmd.
 -- ---------------------------------------------------------------------
 function M.lsp_attach(event)
-  local function bmap(mode, lhs, rhs, desc)
-    vim.keymap.set(mode, lhs, rhs, { buffer = event.buf, desc = desc })
-  end
+    local function bmap(mode, lhs, rhs, desc)
+        vim.keymap.set(mode, lhs, rhs, { buffer = event.buf, desc = desc })
+    end
 
-  -- Navigation
-  bmap("n", "gd", vim.lsp.buf.definition, "Go to definition")
-  bmap("n", "gD", vim.lsp.buf.declaration, "Go to declaration")
-  bmap("n", "gr", vim.lsp.buf.references, "Find references")
-  bmap("n", "gi", vim.lsp.buf.implementation, "Go to implementation")
+    -- Navigation
+    bmap("n", "gd", vim.lsp.buf.definition, "Go to definition")
+    bmap("n", "gD", vim.lsp.buf.declaration, "Go to declaration")
+    bmap("n", "gr", vim.lsp.buf.references, "Find references")
+    bmap("n", "gi", vim.lsp.buf.implementation, "Go to implementation")
 
-  -- Information
-  bmap("n", "K", vim.lsp.buf.hover, "Hover documentation")
-  bmap("n", "<C-k>", vim.lsp.buf.signature_help, "Signature help")
+    -- Information
+    bmap("n", "K", vim.lsp.buf.hover, "Hover documentation")
+    bmap("n", "<C-k>", vim.lsp.buf.signature_help, "Signature help")
 
-  -- Code actions
-  bmap("n", "<leader>la", vim.lsp.buf.code_action, "Code action")
-  bmap("n", "<leader>lr", vim.lsp.buf.rename, "Rename symbol")
+    -- Code actions
+    bmap("n", "<leader>la", vim.lsp.buf.code_action, "Code action")
+    bmap("n", "<leader>lr", vim.lsp.buf.rename, "Rename symbol")
 
-  -- Diagnostics
-  bmap("n", "<leader>ld", vim.diagnostic.open_float, "Show diagnostic")
-  bmap("n", "]d", vim.diagnostic.goto_next, "Next diagnostic")
-  bmap("n", "[d", vim.diagnostic.goto_prev, "Previous diagnostic")
+    -- Diagnostics
+    bmap("n", "<leader>ld", vim.diagnostic.open_float, "Show diagnostic")
+    bmap("n", "]d", vim.diagnostic.goto_next, "Next diagnostic")
+    bmap("n", "[d", vim.diagnostic.goto_prev, "Previous diagnostic")
 end
 
 -- which-key group labels (breadcrumbs for leader prefixes)
 M.wk_groups = {
-  { "<leader>l", group = "LSP" },
-  { "<leader>d", group = "Diagnostics" },
-  { "<leader>e", group = "Explorer" },
-  { "<leader>f", group = "Find" },
-  { "<leader>g", group = "Git" },
-  { "<leader>b", group = "Buffer" },
+    { "<leader>l", group = "LSP" },
+    { "<leader>d", group = "Diagnostics" },
+    { "<leader>e", group = "Explorer" },
+    { "<leader>f", group = "Find" },
+    { "<leader>g", group = "Git" },
+    { "<leader>b", group = "Buffer" },
 }
 
 return M
+
