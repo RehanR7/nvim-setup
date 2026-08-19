@@ -3,42 +3,98 @@
 local M = {}
 local map = vim.keymap.set
 local gmap = vim.g
+
 -- ============================================================================
 --  LEADER KEYS
 -- ============================================================================
 gmap.mapleader = " "      -- Sets the main leader key to <Space>
 gmap.maplocalleader = " " -- Sets the local leader key to <Space> (applies to filetypes)
 
--- Explorer
+-- ============================================================================
+--  EXPLORER
+-- ============================================================================
 map("n", "<leader>e", "<cmd>Neotree toggle<cr>", { desc = "Toggle file explorer" })
 
--- Find (Telescope + Trouble todo search)
+-- ============================================================================
+--  FIND (Telescope + Trouble todo search)
+-- ============================================================================
 map("n", "<leader>ff", "<cmd>Telescope find_files<cr>", { desc = "Find Files" })
 map("n", "<leader>fg", "<cmd>Telescope live_grep<cr>", { desc = "Live Grep" })
 map("n", "<leader>fb", "<cmd>Telescope buffers<cr>", { desc = "Find Buffers" })
 map("n", "<leader>fh", "<cmd>Telescope help_tags<cr>", { desc = "Help" })
 map("n", "<leader>ft", "<cmd>Trouble todo toggle<cr>", { desc = "Todo Search" })
 
--- Git (Neogit + Diffview)
+-- ============================================================================
+--  GIT (Neogit + Diffview)
+-- ============================================================================
 map("n", "<leader>gg", "<cmd>Neogit<cr>", { desc = "Open Neogit" })
 map("n", "<leader>gv", "<cmd>DiffviewOpen<cr>", { desc = "Diff view (working tree)" })
 map("n", "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", { desc = "File history (this file)" })
 map("n", "<leader>gH", "<cmd>DiffviewFileHistory<cr>", { desc = "File history (repo)" })
 
--- Diagnostics (Trouble)
+-- ============================================================================
+--  DIAGNOSTICS (Trouble)
+-- ============================================================================
 map("n", "<leader>dd", "<cmd>Trouble diagnostics toggle<cr>", { desc = "Diagnostics (Trouble)" })
 map("n", "<leader>dD", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", { desc = "Buffer diagnostics" })
 map("n", "<leader>dq", "<cmd>Trouble qflist toggle<cr>", { desc = "Quickfix (Trouble)" })
 
--- Formatting (conform.nvim; loaded on BufReadPre, see plugins/conform.lua)
+-- ============================================================================
+--  FORMATTING (conform.nvim; loaded on BufReadPre, see plugins/conform.lua)
+-- ============================================================================
 map("n", "<leader>lf", function()
     require("conform").format({ async = true, lsp_format = "fallback" })
 end, { desc = "Format buffer" })
 
--- Flash (loaded on VeryLazy, safe to require directly here)
+-- ============================================================================
+--  FLASH (loaded on VeryLazy, safe to require directly here)
+-- ============================================================================
 map({ "n", "x", "o" }, "s", function() require("flash").jump() end, { desc = "Flash" })
 map({ "n", "x", "o" }, "S", function() require("flash").treesitter() end, { desc = "Flash Treesitter" })
 map("o", "r", function() require("flash").remote() end, { desc = "Remote Flash" })
+
+-- ============================================================================
+--  EDITING
+-- ============================================================================
+-- Move lines up/down in visual selection, reselecting and re-indenting after
+map("v", "J", ":m '>+1<CR>gv=gv", { desc = "Move lines down in visual selection" })
+map("v", "K", ":m '<-2<CR>gv=gv", { desc = "Move lines up in visual selection" })
+
+-- Indent/unindent and keep the visual selection active
+map("v", "<", "<gv", { desc = "Unindent and keep selection" })
+map("v", ">", ">gv", { desc = "Indent and keep selection" })
+
+-- Join lines without moving the cursor
+map("n", "J", "mzJ`z", { desc = "Join lines without moving cursor" })
+
+-- Half-page scrolling with cursor centered
+map("n", "<C-d>", "<C-d>zz", { desc = "move down in buffer with cursor centered" })
+map("n", "<C-u>", "<C-u>zz", { desc = "move up in buffer with cursor centered" })
+
+-- Search navigation with cursor centered
+map("n", "n", "nzzzv", { desc = "Next search result cursor centered" })
+map("n", "N", "Nzzzv", { desc = "Previous search result cursor centered" })
+
+-- Replace word under cursor
+map("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]], { desc = "Replace word curs" })
+
+-- Make current file executable
+map("n", "<leader>X", "<cmd>!chmod +x %<CR>", { silent = true, desc = "makes file executable" })
+
+-- Restart Neovim
+map("n", "<leader>re", "<cmd>restart<cr>", { desc = "Restart Neovim (:restart)" })
+
+-- Escape insert mode
+map("i", "<C-c>", "<Esc>")
+
+-- Clear search highlighting
+map("n", "<C-c>", ":nohl<CR>", { desc = "Clear search highlighting", silent = true })
+
+-- Paste over selection without losing yanked text
+map("x", "p", [["_dP]], { desc = "Paste over selection without losing yanked text" })
+
+-- Delete text without saving it to any register
+map({ "n", "v" }, "<leader>d", [["_d]], { desc = "Delete without yanking" })
 
 -- ---------------------------------------------------------------------
 -- Gitsigns: buffer-local (only meaningful once gitsigns attaches to a
@@ -52,14 +108,16 @@ function M.gitsigns_attach(bufnr)
     end
 
     -- Navigation
+    -- NOTE: gs.next_hunk()/gs.prev_hunk() are deprecated in favor of
+    -- gs.nav_hunk("next"/"prev").
     bmap("n", "]c", function()
         if vim.wo.diff then return "]c" end
-        vim.schedule(gs.next_hunk)
+        vim.schedule(function() gs.nav_hunk("next") end)
         return "<Ignore>"
     end, "Next hunk")
     bmap("n", "[c", function()
         if vim.wo.diff then return "[c" end
-        vim.schedule(gs.prev_hunk)
+        vim.schedule(function() gs.nav_hunk("prev") end)
         return "<Ignore>"
     end, "Prev hunk")
 
@@ -69,7 +127,10 @@ function M.gitsigns_attach(bufnr)
     bmap("n", "<leader>gr", gs.reset_hunk, "Reset hunk")
     bmap("n", "<leader>gS", gs.stage_buffer, "Stage buffer")
     bmap("n", "<leader>gR", gs.reset_buffer, "Reset buffer")
-    bmap("n", "<leader>gu", gs.undo_stage_hunk, "Undo stage hunk")
+    -- NOTE: gs.undo_stage_hunk() is deprecated with no direct replacement;
+    -- gitsigns now toggles staged state, so calling stage_hunk() again on an
+    -- already-staged hunk unstages it.
+    bmap("n", "<leader>gu", gs.stage_hunk, "Undo stage hunk")
 
     -- Inspection
     bmap("n", "<leader>gp", gs.preview_hunk, "Preview hunk")
@@ -105,8 +166,10 @@ function M.lsp_attach(event)
 
     -- Diagnostics
     bmap("n", "<leader>ld", vim.diagnostic.open_float, "Show diagnostic")
-    bmap("n", "]d", vim.diagnostic.goto_next, "Next diagnostic")
-    bmap("n", "[d", vim.diagnostic.goto_prev, "Previous diagnostic")
+    -- NOTE: vim.diagnostic.goto_next/goto_prev are deprecated in favor of
+    -- vim.diagnostic.jump({ count = ... }).
+    bmap("n", "]d", function() vim.diagnostic.jump({ count = 1, float = true }) end, "Next diagnostic")
+    bmap("n", "[d", function() vim.diagnostic.jump({ count = -1, float = true }) end, "Previous diagnostic")
 end
 
 -- which-key group labels (breadcrumbs for leader prefixes)
@@ -120,4 +183,3 @@ M.wk_groups = {
 }
 
 return M
-
