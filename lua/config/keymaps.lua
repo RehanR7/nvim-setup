@@ -96,6 +96,15 @@ map("x", "p", [["_dP]], { desc = "Paste over selection without losing yanked tex
 -- Delete text without saving it to any register
 map({ "n", "v" }, "<leader>d", [["_d]], { desc = "Delete without yanking" })
 
+-- AI Completion (NeoCodeium, insert mode only — deliberately not on <Tab>,
+-- see plugins/neocodeium.lua for rationale)
+map("i", "<A-f>", function() require("neocodeium").accept() end, { desc = "Accept AI suggestion" })
+map("i", "<A-w>", function() require("neocodeium").accept_word() end, { desc = "Accept AI suggestion (word)" })
+map("i", "<A-a>", function() require("neocodeium").accept_line() end, { desc = "Accept AI suggestion (line)" })
+map("i", "<A-e>", function() require("neocodeium").cycle_or_complete() end, { desc = "Next AI suggestion" })
+map("i", "<A-r>", function() require("neocodeium").cycle_or_complete(-1) end, { desc = "Previous AI suggestion" })
+map("i", "<A-c>", function() require("neocodeium").clear() end, { desc = "Dismiss AI suggestion" })
+
 -- ---------------------------------------------------------------------
 -- Gitsigns: buffer-local (only meaningful once gitsigns attaches to a
 -- buffer). Definitions live here; plugins/gitsigns.lua just calls this
