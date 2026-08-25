@@ -65,6 +65,17 @@ api.nvim_create_autocmd(
     }
 )
 
+-- Open neo-tree when nvim is started with a directory argument (e.g. `nvim .`)
+api.nvim_create_autocmd("VimEnter", {
+    nested = true,
+    desc = "Open neo-tree when nvim starts with a directory",
+    callback = function()
+        if vim.fn.argc() == 1 and vim.fn.isdirectory(vim.fn.argv(0)) == 1 then
+            pcall(vim.cmd, "Neotree left")
+        end
+    end,
+})
+
 -- ============================================================================
 --  FOLDING
 -- ============================================================================
@@ -76,3 +87,15 @@ opt.foldenable = true -- Enables the code-folding feature globally
 --  NETRW (Built-in File Explorer)
 -- ============================================================================
 vim.g.netrw_banner = 0 -- Disables Vim's built-in file explorer plugin header
+
+-- Netrw redraws continuously when cursorline/relativenumber/scrolloff are
+-- active globally; disable them locally to prevent the flicker loop.
+api.nvim_create_autocmd("FileType", {
+    pattern = "netrw",
+    desc = "Prevent netrw redraw/flicker loop",
+    callback = function()
+        vim.opt_local.cursorline = false
+        vim.opt_local.relativenumber = false
+        vim.opt_local.scrolloff = 0
+    end,
+})
