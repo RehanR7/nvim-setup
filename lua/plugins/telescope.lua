@@ -9,10 +9,20 @@ return {
     cmd = "Telescope",
 
     opts = {
+      defaults = {
+        file_ignore_patterns = {},
+      },
+
+      pickers = {
+        find_files = {
+          hidden = true,
+          no_ignore = true,
+        },
+      },
+
       extensions = {
         ["ui-select"] = {
           require("telescope.themes").get_dropdown({
-            -- Keep the selector compact
             winblend = 0,
           }),
         },
