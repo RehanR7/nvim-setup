@@ -28,6 +28,12 @@ return {
 
     window = {
       width = 32,
+      mappings = {
+        -- <Space> is the leader key; neo-tree's default <Space> (toggle_node)
+        -- would add a delay to every <leader> mapping pressed in the tree.
+        -- Use <CR> to expand/collapse folders instead.
+        ["<space>"] = "none",
+      },
     },
 
     default_component_configs = {

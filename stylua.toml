@@ -1,0 +1,6 @@
+# Used by conform.nvim's stylua formatter (format-on-save for Lua files).
+# Matches this config's style: 4-space indent. Without this file stylua
+# defaults to TABS and would rewrite every Lua file on its first save.
+indent_type = "Spaces"
+indent_width = 4
+column_width = 120

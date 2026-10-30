@@ -50,7 +50,8 @@ end, { desc = "Format buffer" })
 --  FLASH (loaded on VeryLazy, safe to require directly here)
 -- ============================================================================
 map({ "n", "x", "o" }, "s", function() require("flash").jump() end, { desc = "Flash" })
-map({ "n", "x", "o" }, "S", function() require("flash").treesitter() end, { desc = "Flash Treesitter" })
+-- (not mapped in visual mode: there `S` belongs to nvim-surround)
+map({ "n", "o" }, "S", function() require("flash").treesitter() end, { desc = "Flash Treesitter" })
 map("o", "r", function() require("flash").remote() end, { desc = "Remote Flash" })
 
 -- ============================================================================
@@ -94,7 +95,11 @@ map("n", "<C-c>", ":nohl<CR>", { desc = "Clear search highlighting", silent = tr
 map("x", "p", [["_dP]], { desc = "Paste over selection without losing yanked text" })
 
 -- Delete text without saving it to any register
-map({ "n", "v" }, "<leader>d", [["_d]], { desc = "Delete without yanking" })
+-- NOTE: capital D on purpose. <leader>d is the Diagnostics group
+-- (<leader>dd / dD / dq); a plain <leader>d mapping made <leader>dd run
+-- Trouble instead of deleting a line. Usage: <leader>Dd = delete line,
+-- <leader>Dw = delete word, visual + <leader>D = delete selection.
+map({ "n", "v" }, "<leader>D", [["_d]], { desc = "Delete without yanking" })
 
 -- AI Completion (NeoCodeium, insert mode only — deliberately not on <Tab>,
 -- see plugins/neocodeium.lua for rationale)
@@ -119,15 +124,22 @@ function M.gitsigns_attach(bufnr)
     -- Navigation
     -- NOTE: gs.next_hunk()/gs.prev_hunk() are deprecated in favor of
     -- gs.nav_hunk("next"/"prev").
+    -- In a diff window fall back to Vim's native ]c / [c (next/prev change).
+    -- (The old version returned the key string from a non-expr mapping, which
+    -- Neovim ignores, so ]c / [c did nothing in diff mode.)
     bmap("n", "]c", function()
-        if vim.wo.diff then return "]c" end
-        vim.schedule(function() gs.nav_hunk("next") end)
-        return "<Ignore>"
+        if vim.wo.diff then
+            vim.cmd.normal({ "]c", bang = true })
+        else
+            gs.nav_hunk("next")
+        end
     end, "Next hunk")
     bmap("n", "[c", function()
-        if vim.wo.diff then return "[c" end
-        vim.schedule(function() gs.nav_hunk("prev") end)
-        return "<Ignore>"
+        if vim.wo.diff then
+            vim.cmd.normal({ "[c", bang = true })
+        else
+            gs.nav_hunk("prev")
+        end
     end, "Prev hunk")
 
     -- Staging
@@ -162,8 +174,11 @@ function M.lsp_attach(event)
     -- Navigation
     bmap("n", "gd", vim.lsp.buf.definition, "Go to definition")
     bmap("n", "gD", vim.lsp.buf.declaration, "Go to declaration")
-    bmap("n", "gr", vim.lsp.buf.references, "Find references")
-    bmap("n", "gi", vim.lsp.buf.implementation, "Go to implementation")
+    -- NOTE: Neovim 0.11+ already defines grr/gri/gra/grn/grt/grx. A bare `gr`
+    -- map made every `gr...` key wait for a timeout, and `gi` hid Vim's native
+    -- "insert at last insert position", so they are bound as grr/gri instead.
+    bmap("n", "grr", vim.lsp.buf.references, "Find references")
+    bmap("n", "gri", vim.lsp.buf.implementation, "Go to implementation")
 
     -- Information
     bmap("n", "K", vim.lsp.buf.hover, "Hover documentation")

@@ -30,6 +30,7 @@ return {
             vim.api.nvim_create_autocmd("FileType", {
                 pattern = {
                     "bash",
+                    "sh", -- shell scripts use the `sh` filetype (parser: bash)
                     "html",
                     "css",
                     "javascript",

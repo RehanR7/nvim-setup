@@ -17,7 +17,7 @@ opt.shiftwidth = 4   -- Auto-indentation (>>) uses 4 spaces
 -- ============================================================================
 opt.number = true         -- Shows absolute line numbers on the left
 opt.relativenumber = true -- Shows relative distances from the cursor line
-opt.guicursor = ""        -- Customizes cursor appearance (empty = default)
+opt.guicursor = ""        -- Empty = never change the cursor shape (terminal's own cursor is used)
 opt.cursorline = true     -- Highlights the current row the cursor is on
 opt.signcolumn = "yes"    -- Reserves a left-hand column for diagnostic/git icons
 opt.termguicolors = true  -- Enables 24-bit RGB true color support
@@ -82,6 +82,16 @@ api.nvim_create_autocmd("VimEnter", {
 -- NOTE: Treesitter-based folding is defined in treesitter.lua
 opt.foldlevel = 99    -- Prevents automatic folding so code is expanded by default
 opt.foldenable = true -- Enables the code-folding feature globally
+
+-- ============================================================================
+--  PROVIDERS (disabled: nothing in this config uses them)
+-- ============================================================================
+-- Silences the perl/ruby/python3/node warnings in :checkhealth vim.provider.
+-- None of the plugins here are remote plugins, so these are not needed.
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_ruby_provider = 0
+vim.g.loaded_python3_provider = 0
+vim.g.loaded_node_provider = 0
 
 -- ============================================================================
 --  NETRW (Built-in File Explorer)

@@ -17,6 +17,10 @@ return {
         formatters = {
             sqlfluff = {
                 args = { "format", "--dialect", "sqlite", "-" }, -- added: pin dialect to sqlite
+                -- conform's default requires a .sqlfluff file in the project root
+                -- ("Root directory not found"). The dialect is pinned above, so
+                -- it works without one.
+                require_cwd = false,
             },
         },
         format_on_save = {

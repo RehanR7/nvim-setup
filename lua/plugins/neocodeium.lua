@@ -1,6 +1,7 @@
 return {
     "monkoose/neocodeium",
     event = "InsertEnter",
+    cmd = "NeoCodeium", -- so `:NeoCodeium auth` works before you've ever entered insert mode
     opts = {
         -- Don't show a ghost-text suggestion while blink.cmp's menu is open
         filter = function()

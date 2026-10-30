@@ -21,6 +21,10 @@ return {
                 "cssls",
                 "sqlls",
             },
+            -- Servers are enabled explicitly via vim.lsp.enable() below. Without
+            -- this, mason-lspconfig also auto-enables every Mason package it
+            -- knows, e.g. the `stylua` CLI formatter started as a second Lua LSP.
+            automatic_enable = false,
         },
     },
 
@@ -46,6 +50,7 @@ return {
             vim.lsp.enable({
                 "lua_ls",
                 "pyright",
+                "ruff", -- installed by mason-tool-installer; lint diagnostics for Python
                 "bashls",
                 "jsonls",
                 "cssls",
